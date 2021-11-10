@@ -14,6 +14,7 @@ public:
 
 private:
 	std::wstring m_current_path;
+	bool m_have_more_file;
 };
 
 
@@ -21,7 +22,7 @@ class CustomCommands : public RuntimeClass<RuntimeClassFlags<ClassicCom>, IEnumE
 {
 public:
 	CustomCommands();
-	void ReadCommands(std::wstring & current_path);
+	void ReadCommands(bool moreFile, std::wstring & current_path);
 	IFACEMETHODIMP Next(ULONG celt, __out_ecount_part(celt, *pceltFetched) IExplorerCommand** apUICommand, __out_opt ULONG* pceltFetched);
 	IFACEMETHODIMP Skip(ULONG /*celt*/);
 	IFACEMETHODIMP Reset();

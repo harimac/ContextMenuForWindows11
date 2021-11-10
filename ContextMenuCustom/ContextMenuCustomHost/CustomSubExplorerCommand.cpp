@@ -15,11 +15,16 @@ CustomSubExplorerCommand::CustomSubExplorerCommand(winrt::hstring const& configC
 		_param = result.GetNamedString(L"param", L"");
 		_icon = result.GetNamedString(L"icon", L"");
 		_accept_directory = result.GetNamedBoolean(L"acceptDirectory", false);
+		_accept_more_file = result.GetNamedBoolean(L"acceptMoreFile", false);
 		_accept_exts = result.GetNamedString(L"acceptExts", L"");
 	}
 }
 
- bool CustomSubExplorerCommand::Accept(bool isDirectory, std::wstring& ext) {
+ bool CustomSubExplorerCommand::Accept(bool moreFile, bool isDirectory, std::wstring& ext) {
+	if (moreFile) {
+		return _accept_more_file;
+	}
+
 	if (isDirectory) {
 		return _accept_directory;
 	}
@@ -92,14 +97,32 @@ IFACEMETHODIMP CustomSubExplorerCommand::Invoke(_In_opt_ IShellItemArray* select
 		RETURN_IF_FAILED(IUnknown_GetWindow(m_site.Get(), &parent));
 	}
 
-	wil::unique_cotaskmem_string path = GetPath(selection);
+	if (selection)
+	{
+		DWORD count;
+		selection->GetCount(&count);
 
-	if (path.is_valid()) {
-		std::filesystem::path file(path.get());
-		auto param = string_replace_all(_param, L"{path}", file.wstring());
-		param = string_replace_all(param, L"{name}", file.filename().wstring());
-		ShellExecute(parent, L"open", _exe.c_str(), param.c_str(), nullptr, SW_SHOWNORMAL);
+		if (count > 1) {
+			auto path = GetPaths(selection);
+			if (!path.empty()) {
+				auto param = string_replace_all(_param, L"{path}", path);
+				ShellExecute(parent, L"open", _exe.c_str(), param.c_str(), nullptr, SW_SHOWNORMAL);
+			}
+		}
+		else if(count >0) {
+			wil::unique_cotaskmem_string path = GetPath(selection);
+
+			if (path.is_valid()) {
+				std::filesystem::path file(path.get());
+				auto param = string_replace_all(_param, L"{path}", file.wstring());
+				param = string_replace_all(param, L"{name}", file.filename().wstring());
+				ShellExecute(parent, L"open", _exe.c_str(), param.c_str(), nullptr, SW_SHOWNORMAL);
+			}
+		}
+
 	}
+
+	
 
 	return S_OK;
 }

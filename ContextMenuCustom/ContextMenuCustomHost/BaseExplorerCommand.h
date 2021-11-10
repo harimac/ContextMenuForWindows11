@@ -58,6 +58,35 @@ public:
 		}
 		return path;
 	}
+
+	static std::wstring GetPaths(IShellItemArray* selection) {
+		std::wstring path;
+		if (selection)
+		{
+			DWORD count;
+			selection->GetCount(&count);
+			if (count > 0) {
+				unsigned int i = 0;
+				std::wstringstream paths;
+				while (i < count) {
+					IShellItem* item;
+					if (SUCCEEDED(selection->GetItemAt(i++, &item))) {
+						LPWSTR ppszName;
+						if (SUCCEEDED(item->GetDisplayName(SIGDN_FILESYSPATH, &ppszName))) {
+							paths << ppszName;
+							if (i < count) {
+								paths << L";";
+							}
+						}
+						CoTaskMemFree(ppszName);
+						item->Release();
+					}
+				}
+				path = paths.str();
+			}
+		}
+		return path;
+	}
 protected:
 	ComPtr<IUnknown> m_site;
 	

@@ -15,10 +15,19 @@ using namespace winrt::Windows::Data::Json;
 using namespace std::filesystem;
 
 const EXPCMDSTATE CustomExplorerCommand::State(_In_opt_ IShellItemArray* selection) { 
-	wil::unique_cotaskmem_string path = GetPath(selection);
-	if (path.is_valid()) {
-		m_current_path = path.get();
+	if (selection)
+	{
+		wil::unique_cotaskmem_string path = GetPath(selection);
+		if (path.is_valid()) {
+			m_current_path = path.get();
+		}
+
+		DWORD count;
+		selection->GetCount(&count);
+
+		m_have_more_file = count > 1;
 	}
+
 	return ECS_ENABLED;
 };
 
@@ -51,7 +60,7 @@ IFACEMETHODIMP CustomExplorerCommand::EnumSubCommands(_COM_Outptr_ IEnumExplorer
 {
 	*enumCommands = nullptr;
 	auto customCommands = Make<CustomCommands>();
-    customCommands->ReadCommands(m_current_path);
+    customCommands->ReadCommands(m_have_more_file,m_current_path);
 	return customCommands->QueryInterface(IID_PPV_ARGS(enumCommands));
 }
 
@@ -59,7 +68,7 @@ CustomCommands::CustomCommands() {
 
 }
 
-void CustomCommands::ReadCommands(std::wstring& current_path)
+void CustomCommands::ReadCommands(bool moreFile, std::wstring& current_path)
 {
 	auto localFolder = ApplicationData::Current().LocalFolder().Path();
 	path localFolderPath{ localFolder.c_str() };
@@ -73,7 +82,8 @@ void CustomCommands::ReadCommands(std::wstring& current_path)
 
 				std::wstring ext;
 				bool isDirectory = false;
-				if (!current_path.empty()) {
+				
+				if (!moreFile && !current_path.empty()) {
 					path file(current_path);
 					isDirectory = is_directory(file);
 					if (!isDirectory) {
@@ -87,7 +97,7 @@ void CustomCommands::ReadCommands(std::wstring& current_path)
 				for (auto configFile : files) {
 					const auto content = FileIO::ReadTextAsync(configFile).get();
 					const auto command = Make<CustomSubExplorerCommand>(content);
-					if (command->Accept(isDirectory, ext)) {
+					if (command->Accept(moreFile, isDirectory, ext)) {
 						m_commands.push_back(command);
 					}
 				}

@@ -11,6 +11,7 @@ namespace ContextMenuCustomApp.Service.Menu
         private string _icon;
         private string _acceptExts;
         private bool _acceptDirectory;
+        private bool _acceptMoreFile;
 
         public string Title { get => _title; set => SetProperty(ref _title, value); }
         public string Exe { get => _exe; set => SetProperty(ref _exe, value); }
@@ -18,6 +19,7 @@ namespace ContextMenuCustomApp.Service.Menu
         public string Icon { get => _icon; set => SetProperty(ref _icon, value); }
         public string AcceptExts { get => _acceptExts; set => SetProperty(ref _acceptExts, string.IsNullOrEmpty(value)?value:value.ToLower());}// to lower for match
         public bool AcceptDirectory { get => _acceptDirectory; set => SetProperty(ref _acceptDirectory, value); }
+        public bool AcceptMoreFile { get => _acceptMoreFile; set => SetProperty(ref _acceptMoreFile, value); }
 
         public StorageFile File { get; set; }
 
@@ -32,6 +34,7 @@ namespace ContextMenuCustomApp.Service.Menu
                 Icon = json.GetNamedString("icon", ""),
                 AcceptExts = json.GetNamedString("acceptExts", ""),
                 AcceptDirectory = json.GetNamedBoolean("acceptDirectory", false),
+                AcceptMoreFile = json.GetNamedBoolean("acceptMoreFile", false),
             };
         }
 
@@ -46,6 +49,7 @@ namespace ContextMenuCustomApp.Service.Menu
                 ["icon"] = JsonValue.CreateStringValue(content.Icon ?? string.Empty),
                 ["acceptExts"] = JsonValue.CreateStringValue(content.AcceptExts ?? string.Empty),
                 ["acceptDirectory"] = JsonValue.CreateBooleanValue(content.AcceptDirectory),
+                ["acceptMoreFile"] = JsonValue.CreateBooleanValue(content.AcceptMoreFile),
             };
             return json.Stringify();
         }

@@ -66,6 +66,10 @@
                 <ToggleSwitch Header="Match Folder"
                               Margin="0,8,0,0"
                               IsOn="{Binding AcceptDirectory,Mode=TwoWay}" />
+
+                <ToggleSwitch Header="Multiple File "
+                              Margin="0,8,0,0"
+                              IsOn="{Binding AcceptMoreFile,Mode=TwoWay}" />
             </StackPanel>
         </ScrollViewer>
         <StackPanel HorizontalAlignment="Right"
