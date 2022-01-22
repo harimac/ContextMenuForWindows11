@@ -50,6 +50,28 @@ public:
 		}
 		return path;
 	}
+	static std::vector<std::wstring> GetPathes(IShellItemArray* selection) {
+		std::vector<std::wstring> pathes;
+		if (selection)
+		{
+			DWORD count;
+			selection->GetCount(&count);
+			if (count > 0) {
+				for (DWORD i=0; i<count; i++) {
+					IShellItem* item;
+					wil::unique_cotaskmem_string path;
+					if (SUCCEEDED(selection->GetItemAt(i, &item))) {
+						item->GetDisplayName(SIGDN_FILESYSPATH, path.put());
+						if (path.is_valid())
+							pathes.push_back(path.get());
+						item->Release();
+					}
+				}	
+			}
+		}
+		return pathes;
+	}
+
 protected:
 	ComPtr<IUnknown> m_site;
 };

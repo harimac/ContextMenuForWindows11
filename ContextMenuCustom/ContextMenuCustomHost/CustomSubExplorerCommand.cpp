@@ -91,13 +91,15 @@ IFACEMETHODIMP CustomSubExplorerCommand::Invoke(_In_opt_ IShellItemArray* select
 		RETURN_IF_FAILED(IUnknown_GetWindow(m_site.Get(), &parent));
 	}
 
-	wil::unique_cotaskmem_string path = GetPath(selection);
-
-	if (path.is_valid()) {
-		std::filesystem::path file(path.get());
+	std::vector<std::wstring> pathes = GetPathes(selection);
+	for (size_t i = 0; i < pathes.size(); i++) {
+		std::wstring path = pathes[i];
+		//if (path.is_valid()) {
+		std::filesystem::path file(path.c_str());
 		auto param = string_replace_all(_param, L"{path}", file.wstring());
 		param = string_replace_all(param, L"{name}", file.filename().wstring());
 		ShellExecute(parent, L"open", _exe.c_str(), param.c_str(), nullptr, SW_SHOWNORMAL);
+		//}
 	}
 
 	return S_OK;
