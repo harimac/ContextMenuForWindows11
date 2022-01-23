@@ -104,15 +104,15 @@ IFACEMETHODIMP CustomSubExplorerCommand::Invoke(_In_opt_ IShellItemArray* select
 		ShellExecute(parent, L"open", _exe.c_str(), param.c_str(), nullptr, SW_SHOWNORMAL);
 	}
 	else {
-		//for (size_t i = 0; i < pathes.size(); i++) {
-		//	std::wstring path = pathes[i];
-		//	//if (path.is_valid()) {
-		//	std::filesystem::path file(path.c_str());
-		//	auto param = string_replace_all(_param, L"{path}", file.wstring());
-		//	param = string_replace_all(param, L"{name}", file.filename().wstring());
-		//	ShellExecute(parent, L"open", _exe.c_str(), param.c_str(), nullptr, SW_SHOWNORMAL);
-		//	//}
-		//}
+		for (size_t i = 0; i < pathes.size(); i++) {
+			std::wstring path = pathes[i];
+			//if (path.is_valid()) {
+			std::filesystem::path file(path.c_str());
+			auto param = string_replace_all(_param, L"{path}", file.wstring());
+			param = string_replace_all(param, L"{name}", file.filename().wstring());
+			ShellExecute(parent, L"open", _exe.c_str(), param.c_str(), nullptr, SW_SHOWNORMAL);
+			//}
+		}
 	}
 
 	return S_OK;
