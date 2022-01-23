@@ -21,5 +21,6 @@ private:
 	std::wstring _exe;
 	std::wstring _param;
 	bool _accept_directory = false;
+	bool _accept_multi_files = false;
 	std::wstring _accept_exts;
 };

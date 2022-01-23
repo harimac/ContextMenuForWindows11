@@ -12,6 +12,7 @@ CustomSubExplorerCommand::CustomSubExplorerCommand(winrt::hstring const& configC
 		_icon = result.GetNamedString(L"icon", L"");
 		_accept_directory = result.GetNamedBoolean(L"acceptDirectory", false);
 		_accept_exts = result.GetNamedString(L"acceptExts", L"");
+		_accept_multi_files = result.GetNamedBoolean(L"acceptMultiFiles", false);
 	}
 }
 
@@ -92,13 +93,25 @@ IFACEMETHODIMP CustomSubExplorerCommand::Invoke(_In_opt_ IShellItemArray* select
 	}
 
 	std::vector<std::wstring> pathes = GetPathes(selection);
-	for (size_t i = 0; i < pathes.size(); i++) {
-		std::wstring path = pathes[i];
-		//if (path.is_valid()) {
-		std::filesystem::path file(path.c_str());
-		auto param = string_replace_all(_param, L"{path}", file.wstring());
-		param = string_replace_all(param, L"{name}", file.filename().wstring());
+	if (_accept_multi_files) {
+		std::wstring filePathes = L"";
+		for (size_t i = 0; i < pathes.size(); i++) {
+			if (filePathes.empty() == false)
+				filePathes += L"\" \"";
+			filePathes += pathes[i];
+		}
+		auto param = string_replace_all(_param, L"{path}", filePathes);
 		ShellExecute(parent, L"open", _exe.c_str(), param.c_str(), nullptr, SW_SHOWNORMAL);
+	}
+	else {
+		//for (size_t i = 0; i < pathes.size(); i++) {
+		//	std::wstring path = pathes[i];
+		//	//if (path.is_valid()) {
+		//	std::filesystem::path file(path.c_str());
+		//	auto param = string_replace_all(_param, L"{path}", file.wstring());
+		//	param = string_replace_all(param, L"{name}", file.filename().wstring());
+		//	ShellExecute(parent, L"open", _exe.c_str(), param.c_str(), nullptr, SW_SHOWNORMAL);
+		//	//}
 		//}
 	}
 

@@ -103,12 +103,23 @@
                          Header="Match Extensions"
                          PlaceholderText="&quot;.txt .zip&quot; or *"
                          Text="{Binding AcceptExts, Mode=TwoWay}" />
-                <ToggleSwitch Grid.Row="5"
+                <Grid Grid.Row="5"
                               Grid.Column="0"
-                              Grid.ColumnSpan="2"
+                              Grid.ColumnSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <ToggleSwitch Grid.Column="0"
                               Margin="0,8,0,0"
                               Header="Match Folder"
                               IsOn="{Binding AcceptDirectory, Mode=TwoWay}" />
+                    <ToggleSwitch Grid.Column="1"
+                              Margin="0,8,0,0"
+                              Header="Accept Multiple files"
+                              IsOn="{Binding AcceptMultiFiles, Mode=TwoWay}" />
+
+                </Grid>
             </Grid>
         </ScrollViewer>
         <StackPanel Grid.Row="0"
